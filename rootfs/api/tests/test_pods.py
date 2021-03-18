@@ -375,7 +375,7 @@ class PodTest(DryccTransactionTestCase):
         self.assertEqual(pod['type'], 'web')
         self.assertEqual(pod['release'], 'v2')
         # pod name is auto generated so use regex
-        self.assertRegex(pod['name'], app_id + '-web-[0-9]{8,10}-[a-z0-9]{5}')
+        self.assertRegex(pod['name'], app_id + '-web-[0-9]{7,10}-[a-z0-9]{5}')
 
         # verify commands
         data = App.objects.get(id=app_id)

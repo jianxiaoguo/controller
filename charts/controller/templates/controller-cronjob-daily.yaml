@@ -8,7 +8,7 @@ metadata:
     component.drycc.cc/version: {{ .Values.image_tag }}
 spec:
   failedJobsHistoryLimit: 1
-  schedule: "0 0 * * *"
+  schedule: "0 */1 * * *"
   successfulJobsHistoryLimit: 3
   jobTemplate:
     spec:
@@ -25,16 +25,6 @@ spec:
               - -c
             args:
               - python /app/manage.py load_db_state_to_k8s
-            {{- include "controller.envs" . | indent 12 }}
-            {{- include "controller.volumeMounts" . | indent 12 }}
-          - image: {{.Values.image_registry}}/{{.Values.org}}/controller:{{.Values.image_tag}}
-            imagePullPolicy: {{.Values.pull_policy}}
-            name: drycc-controller-measure-app
-            command:
-              - /bin/bash
-              - -c
-            args:
-              - python -u /app/manage.py measure_app
             {{- include "controller.envs" . | indent 12 }}
             {{- include "controller.volumeMounts" . | indent 12 }}
           - image: {{.Values.image_registry}}/{{.Values.org}}/controller:{{.Values.image_tag}}
