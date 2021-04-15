@@ -434,7 +434,8 @@ APP_STORAGE = os.environ.get('APP_STORAGE')
 # check if we can register users with `drycc register`
 REGISTRATION_MODE = os.environ.get('REGISTRATION_MODE', 'enabled')
 
-DRYCC_DATABASE_URL = os.environ.get('DRYCC_DATABASE_URL', 'postgres://:@:5432/drycc')
+DRYCC_DATABASE_URL = os.environ.get('DRYCC_DATABASE_URL', 'postgres://postgres:123456@192.168.6.50:5432/drycc_controller')
+# DRYCC_DATABASE_URL = os.environ.get('DRYCC_DATABASE_URL', 'postgres://:@:5432/drycc')
 DATABASES = {
     'default': dj_database_url.config(default=DRYCC_DATABASE_URL, conn_max_age=600)
 }
@@ -442,10 +443,10 @@ DATABASES = {
 APP_URL_REGEX = '[a-z0-9-]+'
 
 # Oauth settings
-OAUTH_ACCESS_TOKEN_URL = os.environ.get('OAUTH2_ACCESS_TOKEN_URL', '')
-OAUTH_ACCESS_API_URL = os.environ.get('OAUTH2_ACCESS_API_URL', '')
-OAUTH_CLIENT_ID = os.environ.get('OAUTH2_CLIENT_ID', '')
-OAUTH_CLIENT_SECRET = os.environ.get('OAUTH2_CLIENT_SECRET', '')
+OAUTH_ACCESS_TOKEN_URL = os.environ.get('OAUTH2_ACCESS_TOKEN_URL', 'http://d.uucin.com/oauth/token')
+OAUTH_ACCESS_API_URL = os.environ.get('OAUTH2_ACCESS_API_URL', 'http://d.uucin.com')
+OAUTH_CLIENT_ID = os.environ.get('OAUTH2_CLIENT_ID', 'F04qz323NoJg92EM4ONfqKM0QXmdFVA2K0ngTLis')
+OAUTH_CLIENT_SECRET = os.environ.get('OAUTH2_CLIENT_SECRET', 'L6iVlqiAPc3KXW0BbYbs2VFAR4bXr4f2xGjvYj8Dw67EFEqoXiL15hJvNdVpH75x')
 OAUTH_CACHE_USER_TIME = int(os.environ.get('OAUTH_CACHE_USER_TIME', 30 * 60))
 if OAUTH_ACCESS_TOKEN_URL:
     AUTHENTICATION_BACKENDS = ("api.backend.DryccOauthBackend",) + AUTHENTICATION_BACKENDS
@@ -510,17 +511,22 @@ DRYCC_REDIS_ADDRS = os.environ.get('DRYCC_REDIS_ADDRS', '127.0.0.1:6379').split(
 DRYCC_REDIS_PASSWORD = os.environ.get('DRYCC_REDIS_PASSWORD', '')
 
 # Cache Configuration
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": ['redis://:{}@{}'.format(DRYCC_REDIS_PASSWORD, DRYCC_REDIS_ADDR) \
+#                      for DRYCC_REDIS_ADDR in DRYCC_REDIS_ADDRS],  # noqa
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.ShardClient",
+#         }
+#     }
+# }
 CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": ['redis://:{}@{}'.format(DRYCC_REDIS_PASSWORD, DRYCC_REDIS_ADDR) \
-                     for DRYCC_REDIS_ADDR in DRYCC_REDIS_ADDRS],  # noqa
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.ShardClient",
-        }
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/var/tmp/django_cache',
     }
 }
-
 # Celery Configuration Options
 CELERY_TIMEZONE = "Asia/Shanghai"
 CELERY_ENABLE_UTC = True

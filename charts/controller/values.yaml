@@ -22,6 +22,11 @@ app_storage_class: ""
 replicas: 1
 # Set celery replicas
 celery_replicas: 1
+# Set manager cronjob concurrencyPolicy
+# Allow (default): The cron job allows concurrently running jobs
+# Forbid: The cron job does not allow concurrent runs; if it is time for a new job run and the previous job run hasn't finished yet, the cron job skips the new job run
+# Replace: If it is time for a new job run and the previous job run hasn't finished yet, the cron job replaces the currently running job run with a new job run
+concurrency_policy: "Replace"
 
 # Any custom controller environment variables
 # can be specified as key-value pairs under environment
