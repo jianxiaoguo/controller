@@ -37,7 +37,7 @@ class AnonymousOrAuthenticatedAuthentication(authentication.BaseAuthentication):
 
 class DryccTokenAuthentication(TokenAuthentication):
     def authenticate(self, request):
-        if 'manager' in request.META.get('HTTP_USER_AGENT', ''):
+        if 'drycc' in request.META.get('HTTP_USER_AGENT', ''):
             auth = get_authorization_header(request).split()
 
             if not auth or auth[0].lower() != self.keyword.lower().encode():
