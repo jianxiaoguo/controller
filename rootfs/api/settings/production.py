@@ -2,6 +2,7 @@
 Django settings for the Drycc project.
 """
 from distutils.util import strtobool
+import sys
 import os.path
 import tempfile
 import ldap
@@ -10,6 +11,8 @@ import dj_database_url
 
 from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(BASE_DIR, 'apps_extra'))
 # A boolean that turns on/off debug mode.
 # https://docs.djangoproject.com/en/1.11/ref/settings/#debug
 DEBUG = bool(os.environ.get('DRYCC_DEBUG', False))
@@ -80,7 +83,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -106,6 +109,7 @@ INSTALLED_APPS = (
     'jsonfield',
     'rest_framework',
     'rest_framework.authtoken',
+    'social_django',
     # Drycc apps
     'api'
 )
@@ -135,9 +139,9 @@ CORS_EXPOSE_HEADERS = (
 )
 
 X_FRAME_OPTIONS = 'DENY'
-CSRF_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 
@@ -155,7 +159,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'api.authentication.DryccTokenAuthentication',
+        'api.authentication.DryccOIDCAuthentication',
     ),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
@@ -443,68 +447,33 @@ DATABASES = {
 APP_URL_REGEX = '[a-z0-9-]+'
 
 # Oauth settings
-OAUTH_ACCESS_TOKEN_URL = os.environ.get('OAUTH2_ACCESS_TOKEN_URL', 'http://d.uucin.com/oauth/token')
-OAUTH_ACCESS_API_URL = os.environ.get('OAUTH2_ACCESS_API_URL', 'http://d.uucin.com')
-OAUTH_CLIENT_ID = os.environ.get('OAUTH2_CLIENT_ID', 'F04qz323NoJg92EM4ONfqKM0QXmdFVA2K0ngTLis')
-OAUTH_CLIENT_SECRET = os.environ.get('OAUTH2_CLIENT_SECRET', 'L6iVlqiAPc3KXW0BbYbs2VFAR4bXr4f2xGjvYj8Dw67EFEqoXiL15hJvNdVpH75x')
-OAUTH_CACHE_USER_TIME = int(os.environ.get('OAUTH_CACHE_USER_TIME', 30 * 60))
-if OAUTH_ACCESS_TOKEN_URL:
-    AUTHENTICATION_BACKENDS = ("api.backend.DryccOauthBackend",) + AUTHENTICATION_BACKENDS
-
-# LDAP settings taken from environment variables.
-LDAP_ENDPOINT = os.environ.get('LDAP_ENDPOINT', '')
-LDAP_BIND_DN = os.environ.get('LDAP_BIND_DN', '')
-LDAP_BIND_PASSWORD = os.environ.get('LDAP_BIND_PASSWORD', '')
-LDAP_USER_BASEDN = os.environ.get('LDAP_USER_BASEDN', '')
-LDAP_USER_FILTER = os.environ.get('LDAP_USER_FILTER', 'username')
-LDAP_GROUP_BASEDN = os.environ.get('LDAP_GROUP_BASEDN', '')
-LDAP_GROUP_FILTER = os.environ.get('LDAP_GROUP_FILTER', '')
-LDAP_ACTIVE_GROUP = os.environ.get('LDAP_ACTIVE_GROUP', '')
-LDAP_STAFF_GROUP = os.environ.get('LDAP_STAFF_GROUP', '')
-LDAP_SUPERUSER_GROUP = os.environ.get('LDAP_SUPERUSER_GROUP', '')
-
-# Django LDAP backend configuration.
-# See https://pythonhosted.org/django-auth-ldap/reference.html
-# for variables' details.
-# In order to debug LDAP configuration it is possible to enable
-# verbose logging from auth-ldap plugin:
-# https://pythonhosted.org/django-auth-ldap/logging.html
-
-if LDAP_ENDPOINT:
-    AUTHENTICATION_BACKENDS = ("django_auth_ldap.backend.LDAPBackend",) + AUTHENTICATION_BACKENDS
-    AUTH_LDAP_SERVER_URI = LDAP_ENDPOINT
-    AUTH_LDAP_BIND_DN = LDAP_BIND_DN
-    AUTH_LDAP_BIND_PASSWORD = LDAP_BIND_PASSWORD
-    AUTH_LDAP_USER_SEARCH = LDAPSearch(
-        base_dn=LDAP_USER_BASEDN,
-        scope=ldap.SCOPE_SUBTREE,
-        filterstr="%s" % LDAP_USER_FILTER
+OAUTH_ENABLE = bool(os.environ.get('OAUTH_ENABLE', True))
+if OAUTH_ENABLE:
+    LOGIN_REDIRECT_URL = 'http://c.uucin.com/admin/'
+    SOCIAL_AUTH_DRYCC_AUTHORIZATION_URL = os.environ.get('SOCIAL_AUTH_DRYCC_AUTHORIZATION_URL', 'http://p.uucin.com/oauth/authorize/')
+    SOCIAL_AUTH_DRYCC_ACCESS_TOKEN_URL = os.environ.get('SOCIAL_AUTH_DRYCC_ACCESS_TOKEN_URL', 'http://p.uucin.com/oauth/token/')
+    SOCIAL_AUTH_DRYCC_ACCESS_API_URL = os.environ.get('SOCIAL_AUTH_DRYCC_ACCESS_API_URL', 'http://p.uucin.com/users/')
+    SOCIAL_AUTH_DRYCC_USERINFO_URL = os.environ.get('SOCIAL_AUTH_DRYCC_ACCESS_TOKEN_URL', 'http://p.uucin.com/oauth/userinfo/')
+    SOCIAL_AUTH_DRYCC_JWKS_URI = os.environ.get('SOCIAL_AUTH_DRYCC_ACCESS_API_URL', 'http://p.uucin.com/oauth/.well-known/jwks.json')
+    SOCIAL_AUTH_DRYCC_OIDC_ENDPOINT = os.environ.get('SOCIAL_AUTH_DRYCC_OIDC_ENDPOINT', 'http://p.uucin.com/oauth')
+    SOCIAL_AUTH_DRYCC_KEY = os.environ.get('SOCIAL_AUTH_DRYCC_KEY', '3yRxMBQcONUJDOK2FUPmf698xUyOCTnACtRZne0O')
+    SOCIAL_AUTH_DRYCC_SECRET = os.environ.get('SOCIAL_AUTH_DRYCC_SECRET', 'gZ6snb83i3r8Pgw5ClIElBaG5H7UOaxNOrNVYNYSgnP96F7ngoFQ9vVQ40b6mqYJ')
+    SOCIAL_AUTH_POSTGRES_JSONFIELD = True
+    SOCIAL_AUTH_PIPELINE = (
+        'social_core.pipeline.social_auth.social_details',
+        'social_core.pipeline.social_auth.social_uid',
+        'social_core.pipeline.social_auth.social_user',
+        'social_core.pipeline.user.get_username',
+        'social_core.pipeline.social_auth.associate_by_email',
+        'social_core.pipeline.user.create_user',
+        'api.pipeline.update_user',
+        'social_core.pipeline.social_auth.associate_user',
+        'social_core.pipeline.social_auth.load_extra_data',
+        'social_core.pipeline.user.user_details',
     )
-    AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-        base_dn=LDAP_GROUP_BASEDN,
-        scope=ldap.SCOPE_SUBTREE,
-        filterstr="%s" % LDAP_GROUP_FILTER
-    )
-    AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-        'is_active': LDAP_ACTIVE_GROUP,
-        'is_staff': LDAP_STAFF_GROUP,
-        'is_superuser': LDAP_SUPERUSER_GROUP,
-    }
-    AUTH_LDAP_GROUP_TYPE = GroupOfNamesType()
-    AUTH_LDAP_USER_ATTR_MAP = {
-        "first_name": "givenName",
-        "last_name": "sn",
-        "email": "mail",
-        "username": LDAP_USER_FILTER,
-    }
-    AUTH_LDAP_GLOBAL_OPTIONS = {
-        ldap.OPT_X_TLS_REQUIRE_CERT: False,
-        ldap.OPT_REFERRALS: False
-    }
-    AUTH_LDAP_ALWAYS_UPDATE_USER = True
-    AUTH_LDAP_MIRROR_GROUPS = True
-    AUTH_LDAP_FIND_GROUP_PERMS = True
-    AUTH_LDAP_CACHE_GROUPS = False
+    AUTHENTICATION_BACKENDS = ("api.backend.DryccOIDC",) + \
+        AUTHENTICATION_BACKENDS
+    OAUTH_CACHE_USER_TIME = int(os.environ.get('OAUTH_CACHE_USER_TIME', 30 * 60))
 
 # Redis Configuration
 DRYCC_REDIS_ADDRS = os.environ.get('DRYCC_REDIS_ADDRS', '127.0.0.1:6379').split(",")

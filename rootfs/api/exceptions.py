@@ -43,10 +43,12 @@ def custom_exception_handler(exc, context):
 
     # No response means DRF couldn't handle it
     # Output a generic 500 in a JSON format
+    print(exc)
     if response is None:
         logging.exception('Uncaught Exception', exc_info=exc)
         set_rollback()
-        return Response({'detail': 'Server Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        print(exc)
+        return Response({'detail': exc}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # log a few different types of exception instead of using APIException
     if isinstance(exc, (DryccException, ServiceUnavailable, HealthcheckException)):

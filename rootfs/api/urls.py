@@ -16,6 +16,9 @@ router = DefaultRouter(trailing_slash=False)
 # Add the generated REST URLs and login/logout endpoint
 urlpatterns = [
     url(r'^', include(router.urls)),
+    url(r'login/brower/?$', views.UserLoginWithBrowerView.as_view()),
+    url('', include('social_django.urls', namespace='social')),
+    url(r'token/(?P<key>[-_\w]+)/?$', views.UserTokenView.as_view()),
     # application release components
     url(r"^apps/(?P<id>{})/config/?$".format(settings.APP_URL_REGEX),
         views.ConfigViewSet.as_view({'get': 'retrieve', 'post': 'create'})),

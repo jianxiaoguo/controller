@@ -2,11 +2,13 @@
 RESTful view classes for presenting Drycc API objects.
 """
 import logging
+import json
 from copy import deepcopy
+from django.core.cache import cache
 from django.http import Http404, HttpResponse
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from guardian.shortcuts import assign_perm, get_objects_for_user, \
     get_users_with_perms, remove_perm
 from django.views.generic import View
@@ -51,6 +53,28 @@ class LivenessCheckView(View):
     def get(self, request):
         return HttpResponse("OK")
     head = get
+
+
+class UserLoginWithBrowerView(View):
+    def post(self, request, *args, **kwargs):
+        import uuid
+        def get_local_host(request):
+            uri = request.build_absolute_uri()
+            return uri[0:uri.find(request.path)]
+        res = redirect(get_local_host(request) + f"/v2/login/drycc/?key=" + uuid.uuid4().hex)
+        return res
+
+
+class UserTokenView(View):
+    def get(self, request, *args, **kwargs):
+        state = cache.get("OIDC_key_" + self.kwargs['key'], "")
+        token = cache.get("OIDC_state_" + state, {})
+        if not token.get('token'):
+            return HttpResponse(status=404)
+        # if token.get('token') == "fail":
+        #     return HttpResponse(json.dumps({'token': "fail"}))
+        # else:
+        return HttpResponse(json.dumps(token))
 
 
 class UserRegistrationViewSet(GenericViewSet,
