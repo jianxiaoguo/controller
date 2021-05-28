@@ -32,6 +32,8 @@ urlpatterns = [
         views.ReleaseViewSet.as_view({'post': 'rollback'})),
     url(r"^apps/(?P<id>{})/releases/?$".format(settings.APP_URL_REGEX),
         views.ReleaseViewSet.as_view({'get': 'list'})),
+    url(r"^apps/(?P<id>{})/releases/count/?$".format(settings.APP_URL_REGEX),
+        views.ReleaseCountViewSet.as_view({'get': 'list'})),
     # restart pods
     url(r"^apps/(?P<id>{})/pods/restart/?$".format(settings.APP_URL_REGEX),
         views.PodViewSet.as_view({'post': 'restart'})),

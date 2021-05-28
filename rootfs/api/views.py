@@ -9,6 +9,7 @@ from django.http import Http404, HttpResponse
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
+from django.db.models import Count
 from guardian.shortcuts import assign_perm, get_objects_for_user, \
     get_users_with_perms, remove_perm
 from django.views.generic import View
@@ -71,9 +72,6 @@ class UserTokenView(View):
         token = cache.get("OIDC_state_" + state, {})
         if not token.get('token'):
             return HttpResponse(status=404)
-        # if token.get('token') == "fail":
-        #     return HttpResponse(json.dumps({'token': "fail"}))
-        # else:
         return HttpResponse(json.dumps(token))
 
 
@@ -557,6 +555,19 @@ class ReleaseViewSet(AppResourceViewSet):
         new_release = release.rollback(request.user, request.data.get('version', None))
         response = {'version': new_release.version}
         return Response(response, status=status.HTTP_201_CREATED)
+
+
+class ReleaseCountViewSet(AppResourceViewSet):
+    """A viewset for interacting with Release objects."""
+    model = models.Release
+    serializer_class = serializers.ReleaseSerializer
+
+    def list(self, request, **kwargs):
+        users = self.model.objects.filter(app__id=self.kwargs['id']).\
+            values_list('owner__username').order_by('owner_id').\
+            annotate(nums=Count('owner'))
+        users = [{"username": _[0],"count": _[1]} for _ in users]
+        return Response(users)
 
 
 class TLSViewSet(AppResourceViewSet):
