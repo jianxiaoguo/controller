@@ -10,6 +10,7 @@ RUN apk add --update --virtual .build-deps \
     libffi-dev \
     musl-dev \
     openldap-dev \
+    openssl-dev \
   && pip3 install --disable-pip-version-check --no-cache-dir -r /app/requirements.txt \
   && runDeps="$( \
     scanelf --needed --nobanner --format '%n#p' --recursive /usr/local \

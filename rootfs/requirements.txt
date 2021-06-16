@@ -26,4 +26,4 @@ influxdb-client==1.13.0
 dj-database-url
 social-auth-app-django==4.0.0
 python-jose
-#Authlib
+Authlib
