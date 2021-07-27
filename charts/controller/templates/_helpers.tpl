@@ -154,6 +154,30 @@ env:
 - name: "DRYCC_RABBITMQ_URL"
   value: "amqp://$(DRYCC_RABBITMQ_USERNAME):$(DRYCC_RABBITMQ_PASSWORD)@drycc-rabbitmq-0.drycc-rabbitmq.{{$.Release.Namespace}}.svc.{{$.Values.global.cluster_domain}}:5672/drycc"
 {{- end }}
+{{- if eq .Values.global.passport_location "on-cluster"}}
+- name: "DRYCC_PASSPORT_DOMAIN"
+  value: drycc-passport.{{ .Values.global.platform_domain }}
+- name: "SOCIAL_AUTH_DRYCC_AUTHORIZATION_URL"
+  value: "$(DRYCC_PASSPORT_DOMAIN)/oauth/token/"
+- name: "SOCIAL_AUTH_DRYCC_ACCESS_API_URL"
+  value: "$(DRYCC_PASSPORT_DOMAIN)/users/"
+- name: "SOCIAL_AUTH_DRYCC_USERINFO_URL"
+  value: "$(DRYCC_PASSPORT_DOMAIN)/oauth/userinfo/"
+- name: "SOCIAL_AUTH_DRYCC_JWKS_URI"
+  value: "$(DRYCC_PASSPORT_DOMAIN)/oauth/.well-known/jwks.json"
+- name: "SOCIAL_AUTH_DRYCC_OIDC_ENDPOINT"
+  value: "$(DRYCC_PASSPORT_DOMAIN)/oauth"
+- name: SOCIAL_AUTH_DRYCC_CONTROLLER_KEY
+  valueFrom:
+    secretKeyRef:
+      name: passport-creds
+      key: social-auth-drycc-controller-key
+- name: SOCIAL_AUTH_DRYCC_CONTROLLER_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: passport-creds
+      key: social-auth-drycc-controller-secret
+{{- end }}
 {{- range $key, $value := .Values.environment }}
 - name: {{ $key }}
   value: {{ $value | quote }}
