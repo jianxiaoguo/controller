@@ -34,7 +34,7 @@ def do_auth(backend, redirect_name='next'):
         params = parse_qs(query)
         return {key: params[key][0] for key in params}
     from django.core.cache import cache
-    cache.set("OIDC_key_" + data.get('key'), form2json(url).get('state'), 60 * 10)
+    cache.set("oidc_key_" + data.get('key', ''), form2json(url).get('state'), 60 * 10)
     return response
 
 
@@ -116,7 +116,7 @@ def do_complete(backend, login, user=None, redirect_name='next',
     response.set_cookie("id_token", social_auth.extra_data.get('id_token'),
                         max_age=social_auth.extra_data.get('expires_in'))
     from django.core.cache import cache
-    cache.set("OIDC_state_" + data.get('state'),
+    cache.set("oidc_state_" + data.get('state'),
               {'token':social_auth.extra_data.get('id_token', 'fail'),
                'username': user.username},
               60 * 10)

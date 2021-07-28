@@ -68,8 +68,8 @@ class UserLoginWithBrowerView(View):
 
 class UserTokenView(View):
     def get(self, request, *args, **kwargs):
-        state = cache.get("OIDC_key_" + self.kwargs['key'], "")
-        token = cache.get("OIDC_state_" + state, {})
+        state = cache.get("oidc_key_" + self.kwargs['key'], "")
+        token = cache.get("oidc_state_" + state, {})
         if not token.get('token'):
             return HttpResponse(status=404)
         return HttpResponse(json.dumps(token))
