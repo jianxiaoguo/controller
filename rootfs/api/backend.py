@@ -1,5 +1,9 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
+
+from social_core.backends.oauth import BaseOAuth2
+from social_core.backends.open_id_connect import OpenIdConnectAuth
 
 from api import serializers
 from api.oauth import OAuthManager
@@ -29,11 +33,6 @@ class DryccOauthBackend(object):
         except ObjectDoesNotExist:
             pass
         return user
-
-from django.conf import settings
-
-from social_core.backends.oauth import BaseOAuth2
-from social_core.backends.open_id_connect import OpenIdConnectAuth
 
 
 class DryccOAuth(BaseOAuth2):
@@ -97,6 +96,7 @@ class DryccOIDC(OpenIdConnectAuth):
     ]
 
     from social_core.utils import cache
+
     @cache(ttl=86400)
     def oidc_config(self):
         return self.get_json(self.OIDC_ENDPOINT +

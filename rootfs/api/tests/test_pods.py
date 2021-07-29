@@ -263,7 +263,7 @@ class PodTest(DryccTransactionTestCase):
         url = "/v2/apps/{app_id}/pods".format(**locals())
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200, response.data)
-        self.assertEqual(len(response.data['results']), 2)
+        self.assertEqual(len(response.data['results']), 1)
         self.assertEqual(response.data['results'][0]['release'], 'v3')
 
         # post new config
@@ -275,7 +275,7 @@ class PodTest(DryccTransactionTestCase):
         url = "/v2/apps/{app_id}/pods".format(**locals())
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200, response.data)
-        self.assertEqual(len(response.data['results']), 2)
+        self.assertEqual(len(response.data['results']), 1)
         self.assertEqual(response.data['results'][0]['release'], 'v4')
 
     def test_container_errors(self, mock_requests):
@@ -339,7 +339,7 @@ class PodTest(DryccTransactionTestCase):
             self.assertIn(pod['type'], ['web', 'worker'])
             self.assertEqual(pod['release'], 'v2')
             # pod name is auto generated so use regex
-            self.assertRegex(pod['name'], app_id + '-(worker|web)-[0-9]{1,10}-[a-z0-9]{5}')
+            self.assertRegex(pod['name'], app_id + '-(worker|web)-[0-9]{7,10}-[a-z0-9]{5}')
 
     def test_pod_command_format(self, mock_requests):
         # regression test for https://github.com/drycc/drycc/pull/1285
@@ -375,7 +375,7 @@ class PodTest(DryccTransactionTestCase):
         self.assertEqual(pod['type'], 'web')
         self.assertEqual(pod['release'], 'v2')
         # pod name is auto generated so use regex
-        self.assertRegex(pod['name'], app_id + '-web-[0-9]{1,10}-[a-z0-9]{5}')
+        self.assertRegex(pod['name'], app_id + '-web-[0-9]{8,10}-[a-z0-9]{5}')
 
         # verify commands
         data = App.objects.get(id=app_id)

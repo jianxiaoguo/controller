@@ -9,7 +9,6 @@ RUN apk add --update --virtual .build-deps \
     cargo \
     libffi-dev \
     musl-dev \
-    openldap-dev \
     openssl-dev \
   && pip3 install --disable-pip-version-check --no-cache-dir -r /app/requirements.txt \
   && runDeps="$( \

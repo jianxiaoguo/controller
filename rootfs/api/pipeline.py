@@ -8,6 +8,7 @@ def update_user(backend, user, response, *args, **kwargs):
     user.is_active = response.get('is_active')
     user.save()
 
+
 def load_extra_data(backend, details, response, uid, user, *args, **kwargs):
     social = kwargs.get('social') or \
              backend.strategy.storage.user.get_social_auth(backend.name, uid)

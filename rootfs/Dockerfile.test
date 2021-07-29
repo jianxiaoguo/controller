@@ -5,6 +5,7 @@ COPY dev_requirements.txt /app/dev_requirements.txt
 
 ENV PGDATA /var/lib/postgresql/12
 RUN echo https://dl-cdn.alpinelinux.org/alpine/edge/testing >>/etc/apk/repositories \
+  && sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories \
   && apk add --update --virtual .build-deps \
     postgresql-dev \
     gcc \

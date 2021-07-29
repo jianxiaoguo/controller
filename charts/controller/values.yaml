@@ -4,7 +4,7 @@ image_tag: "canary"
 image_registry: "docker.io"
 app_image_pull_policy: "Always"
 # A comma-separated list of URLs to send app release information to
-# See https://drycc.com/docs/workflow/managing-workflow/deploy-hooks
+# See https://www.drycc.cc/managing-workflow/deploy-hooks/
 deploy_hook_urls: ""
 # limits_cpu: "100m"
 # limits_memory: "50Mi"
@@ -22,7 +22,7 @@ app_storage_class: ""
 replicas: 1
 # Set celery replicas
 celery_replicas: 1
-# Set manager cronjob concurrencyPolicy
+# Set cronjob concurrencyPolicy
 # Allow (default): The cron job allows concurrently running jobs
 # Forbid: The cron job does not allow concurrent runs; if it is time for a new job run and the previous job run hasn't finished yet, the cron job skips the new job run
 # Replace: If it is time for a new job run and the previous job run hasn't finished yet, the cron job replaces the currently running job run with a new job run

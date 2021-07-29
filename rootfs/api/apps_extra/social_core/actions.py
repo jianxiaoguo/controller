@@ -1,6 +1,6 @@
 from urllib.parse import quote
 
-from .utils import sanitize_redirect, user_is_authenticated, \
+from social_core.utils import sanitize_redirect, user_is_authenticated, \
                    user_is_active, partial_pipeline_data, setting_url
 
 
@@ -14,7 +14,7 @@ def do_auth(backend, redirect_name='next'):
             backend.strategy.session_set(field_name, data[field_name])
         else:
             backend.strategy.session_set(field_name, None)
-    uri = None
+    # uri = None
     if redirect_name in data:
         # Check and sanitize a user-defined GET/POST next field value
         redirect_uri = data[redirect_name]
@@ -26,15 +26,16 @@ def do_auth(backend, redirect_name='next'):
             redirect_name,
             redirect_uri or backend.setting('LOGIN_REDIRECT_URL')
         )
-    response =  backend.start()
+    response = backend.start()
     url = response.url.split('?')[1]
+
     def form2json(form_data):
         from urllib.parse import parse_qs, urlparse
         query = urlparse('?' + form_data).query
         params = parse_qs(query)
         return {key: params[key][0] for key in params}
     from django.core.cache import cache
-    cache.set("OIDC_key_" + data.get('key'), form2json(url).get('state'), 60 * 10)
+    cache.set("oidc_key_" + data.get('key', ''), form2json(url).get('state'), 60 * 10)
     return response
 
 
@@ -110,45 +111,14 @@ def do_complete(backend, login, user=None, redirect_name='next',
             backend.setting('LOGIN_REDIRECT_URL')
     response = backend.strategy.redirect(url)
     social_auth = user.social_auth.filter(provider='drycc').\
-            order_by('-modified').last()
+        order_by('-modified').last()
     response.set_cookie("name", user.username,
                         max_age=social_auth.extra_data.get('expires_in'))
     response.set_cookie("id_token", social_auth.extra_data.get('id_token'),
                         max_age=social_auth.extra_data.get('expires_in'))
     from django.core.cache import cache
-    cache.set("OIDC_state_" + data.get('state'),
-              {'token':social_auth.extra_data.get('id_token', 'fail'),
+    cache.set("oidc_state_" + data.get('state'),
+              {'token': social_auth.extra_data.get('id_token', 'fail'),
                'username': user.username},
               60 * 10)
-    return response
-
-
-def do_disconnect(backend, user, association_id=None, redirect_name='next',
-                  *args, **kwargs):
-    partial = partial_pipeline_data(backend, user, *args, **kwargs)
-    if partial:
-        if association_id and not partial.kwargs.get('association_id'):
-            partial.extend_kwargs({
-                'association_id': association_id
-            })
-        response = backend.disconnect(*partial.args, **partial.kwargs)
-        # clean partial data after usage
-        backend.strategy.clean_partial_pipeline(partial.token)
-    else:
-        response = backend.disconnect(user=user, association_id=association_id,
-                                      *args, **kwargs)
-
-    if isinstance(response, dict):
-        url = backend.strategy.absolute_uri(
-            backend.strategy.request_data().get(redirect_name, '') or
-            backend.setting('DISCONNECT_REDIRECT_URL') or
-            backend.setting('LOGIN_REDIRECT_URL')
-        )
-        if backend.setting('SANITIZE_REDIRECTS', True):
-            allowed_hosts = backend.setting('ALLOWED_REDIRECT_HOSTS', []) + \
-                            [backend.strategy.request_host()]
-            url = sanitize_redirect(allowed_hosts, url) or \
-                backend.setting('DISCONNECT_REDIRECT_URL') or \
-                backend.setting('LOGIN_REDIRECT_URL')
-        response = backend.strategy.redirect(url)
     return response
