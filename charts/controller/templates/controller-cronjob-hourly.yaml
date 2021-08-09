@@ -1,7 +1,7 @@
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: drycc-controller-cronjob-daily
+  name: drycc-controller-cronjob-hourly
   labels:
     heritage: drycc
   annotations:
@@ -18,7 +18,7 @@ spec:
           restartPolicy: OnFailure
           serviceAccount: drycc-controller
           containers:
-          - image: {{.Values.image_registry}}/{{.Values.org}}/controller:{{.Values.image_tag}}
+          - image: {{.Values.image_registry}}/{{.Values.image_org}}/controller:{{.Values.image_tag}}
             imagePullPolicy: {{.Values.pull_policy}}
             name: drycc-controller-measure-app
             command:
@@ -27,5 +27,3 @@ spec:
             args:
               - python -u /app/manage.py measure_app
             {{- include "controller.envs" . | indent 12 }}
-            {{- include "controller.volumeMounts" . | indent 12 }}
-          {{- include "controller.volumes" . | indent 10 }}

@@ -1,17 +1,3 @@
-{{/*
-Set apiVersion based on .Capabilities.APIVersions
-*/}}
-{{- define "rbacAPIVersion" -}}
-{{- if .Capabilities.APIVersions.Has "rbac.authorization.k8s.io/v1beta1" -}}
-rbac.authorization.k8s.io/v1beta1
-{{- else if .Capabilities.APIVersions.Has "rbac.authorization.k8s.io/v1alpha1" -}}
-rbac.authorization.k8s.io/v1alpha1
-{{- else -}}
-rbac.authorization.k8s.io/v1
-{{- end -}}
-{{- end -}}
-
-
 {{/* Generate controller deployment envs */}}
 {{- define "controller.envs" -}}
 {{ $redisNodeCount := .Values.redis.replicas | int }}
@@ -156,8 +142,10 @@ env:
 {{- end }}
 {{- if eq .Values.global.passport_location "on-cluster"}}
 - name: "DRYCC_PASSPORT_DOMAIN"
-  value: drycc-passport.{{ .Values.global.platform_domain }}
+  value: http://drycc-passport.{{ .Values.global.platform_domain }}
 - name: "SOCIAL_AUTH_DRYCC_AUTHORIZATION_URL"
+  value: "$(DRYCC_PASSPORT_DOMAIN)/oauth/authorize/"
+- name: "SOCIAL_AUTH_DRYCC_ACCESS_TOKEN_URL"
   value: "$(DRYCC_PASSPORT_DOMAIN)/oauth/token/"
 - name: "SOCIAL_AUTH_DRYCC_ACCESS_API_URL"
   value: "$(DRYCC_PASSPORT_DOMAIN)/users/"
@@ -167,6 +155,8 @@ env:
   value: "$(DRYCC_PASSPORT_DOMAIN)/oauth/.well-known/jwks.json"
 - name: "SOCIAL_AUTH_DRYCC_OIDC_ENDPOINT"
   value: "$(DRYCC_PASSPORT_DOMAIN)/oauth"
+- name: "LOGIN_REDIRECT_URL"
+  value: "$(DRYCC_PASSPORT_DOMAIN)/login/done/"
 - name: SOCIAL_AUTH_DRYCC_CONTROLLER_KEY
   valueFrom:
     secretKeyRef:

@@ -27,7 +27,9 @@ def do_auth(backend, redirect_name='next'):
             redirect_uri or backend.setting('LOGIN_REDIRECT_URL')
         )
     response = backend.start()
+    print(f"response.url: {response.url}")
     url = response.url.split('?')[1]
+    print(f"response.url 1: {response.url}")
 
     def form2json(form_data):
         from urllib.parse import parse_qs, urlparse
@@ -36,6 +38,7 @@ def do_auth(backend, redirect_name='next'):
         return {key: params[key][0] for key in params}
     from django.core.cache import cache
     cache.set("oidc_key_" + data.get('key', ''), form2json(url).get('state'), 60 * 10)
+    print(f"response: {response}")
     return response
 
 

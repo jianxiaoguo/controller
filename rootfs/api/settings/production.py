@@ -421,8 +421,8 @@ APP_STORAGE = os.environ.get('APP_STORAGE')
 # check if we can register users with `drycc register`
 REGISTRATION_MODE = os.environ.get('REGISTRATION_MODE', 'enabled')
 
-# DRYCC_DATABASE_URL = os.environ.get('DRYCC_DATABASE_URL', 'postgres://postgres:123456@192.168.6.50:5432/drycc_controller')  # noqa
-DRYCC_DATABASE_URL = os.environ.get('DRYCC_DATABASE_URL', 'postgres://:@:5432/drycc')
+DRYCC_DATABASE_URL = os.environ.get('DRYCC_DATABASE_URL', 'postgres://postgres:123456@192.168.6.50:5432/drycc_controller')  # noqa
+# DRYCC_DATABASE_URL = os.environ.get('DRYCC_DATABASE_URL', 'postgres://:@:5432/drycc')
 DATABASES = {
     'default': dj_database_url.config(default=DRYCC_DATABASE_URL, conn_max_age=600)
 }
@@ -430,15 +430,15 @@ DATABASES = {
 APP_URL_REGEX = '[a-z0-9-]+'
 
 # Oauth settings
-LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', '/admin/')
-SOCIAL_AUTH_DRYCC_AUTHORIZATION_URL = os.environ.get('SOCIAL_AUTH_DRYCC_AUTHORIZATION_URL')
-SOCIAL_AUTH_DRYCC_ACCESS_TOKEN_URL = os.environ.get('SOCIAL_AUTH_DRYCC_ACCESS_TOKEN_URL')
-SOCIAL_AUTH_DRYCC_ACCESS_API_URL = os.environ.get('SOCIAL_AUTH_DRYCC_ACCESS_API_URL')
-SOCIAL_AUTH_DRYCC_USERINFO_URL = os.environ.get('SOCIAL_AUTH_DRYCC_ACCESS_TOKEN_URL')
-SOCIAL_AUTH_DRYCC_JWKS_URI = os.environ.get('SOCIAL_AUTH_DRYCC_ACCESS_API_URL')
-SOCIAL_AUTH_DRYCC_OIDC_ENDPOINT = os.environ.get('SOCIAL_AUTH_DRYCC_OIDC_ENDPOINT')
-SOCIAL_AUTH_DRYCC_KEY = os.environ.get('SOCIAL_AUTH_DRYCC_KEY')
-SOCIAL_AUTH_DRYCC_SECRET = os.environ.get('SOCIAL_AUTH_DRYCC_SECRET')
+LOGIN_REDIRECT_URL = 'http://p.uucin.com/login/done/'
+SOCIAL_AUTH_DRYCC_AUTHORIZATION_URL = os.environ.get('SOCIAL_AUTH_DRYCC_AUTHORIZATION_URL', 'http://p.uucin.com/oauth/authorize/')
+SOCIAL_AUTH_DRYCC_ACCESS_TOKEN_URL = os.environ.get('SOCIAL_AUTH_DRYCC_ACCESS_TOKEN_URL', 'http://p.uucin.com/oauth/token/')
+SOCIAL_AUTH_DRYCC_ACCESS_API_URL = os.environ.get('SOCIAL_AUTH_DRYCC_ACCESS_API_URL', 'http://p.uucin.com/users/')
+SOCIAL_AUTH_DRYCC_USERINFO_URL = os.environ.get('SOCIAL_AUTH_DRYCC_USERINFO_URL', 'http://p.uucin.com/oauth/userinfo/')
+SOCIAL_AUTH_DRYCC_JWKS_URI = os.environ.get('SOCIAL_AUTH_DRYCC_JWKS_URI', 'http://p.uucin.com/oauth/.well-known/jwks.json')
+SOCIAL_AUTH_DRYCC_OIDC_ENDPOINT = os.environ.get('SOCIAL_AUTH_DRYCC_OIDC_ENDPOINT', 'http://p.uucin.com/oauth')
+SOCIAL_AUTH_DRYCC_KEY = os.environ.get('SOCIAL_AUTH_DRYCC_CONTROLLER_KEY', '3yRxMBQcONUJDOK2FUPmf698xUyOCTnACtRZne0O')
+SOCIAL_AUTH_DRYCC_SECRET = os.environ.get('SOCIAL_AUTH_DRYCC_CONTROLLER_SECRET', 'gZ6snb83i3r8Pgw5ClIElBaG5H7UOaxNOrNVYNYSgnP96F7ngoFQ9vVQ40b6mqYJ')
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',

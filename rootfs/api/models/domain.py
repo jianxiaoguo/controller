@@ -30,7 +30,8 @@ class Domain(AuditedModel):
             # Save to DB
             return super(Domain, self).save(*args, **kwargs)
         finally:
-            self.app.refresh()
+            pass
+            # self.app.refresh()
 
     @transaction.atomic
     def delete(self, *args, **kwargs):
