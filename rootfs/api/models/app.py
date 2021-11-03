@@ -192,6 +192,10 @@ class App(UuidAuditedModel):
         whitelist = self.appsettings_set.latest().whitelist
         if whitelist:
             kwargs.update({"whitelist": whitelist})
+        if self.id.startswith('normandy-cloud'):
+            INGRESS_CLASS = 'nginx'
+        else:
+            INGRESS_CLASS = settings.INGRESS_CLASS
         try:
             # In order to create an ingress, we must first have a namespace.
             if ingress == "":
@@ -200,11 +204,11 @@ class App(UuidAuditedModel):
                 data = self._scheduler.ingress.get(namespace, ingress).json()
                 version = data["metadata"]["resourceVersion"]
                 self._scheduler.ingress.put(
-                    ingress, settings.INGRESS_CLASS, namespace, version, **kwargs)
+                    ingress, INGRESS_CLASS, namespace, version, **kwargs)
             except KubeException:
                 self.log("creating Ingress {}".format(namespace), level=logging.INFO)
                 self._scheduler.ingress.create(
-                    ingress, settings.INGRESS_CLASS, namespace, **kwargs)
+                    ingress, INGRESS_CLASS, namespace, **kwargs)
         except KubeException as e:
             raise ServiceUnavailable('Could not create Ingress in Kubernetes') from e
 
