@@ -140,6 +140,7 @@ class TraefikIngress(BaseIngress):
         data["metadata"]["annotations"].update({
             "traefik.ingress.kubernetes.io/router.middlewares": ",".join(middlewares)
         })
+        data["metadata"]["annotations"].pop("traefik.ingress.kubernetes.io/router.middlewares")
         return data
 
     def create(self, namespace, ingress, **kwargs):
