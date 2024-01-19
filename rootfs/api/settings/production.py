@@ -369,7 +369,7 @@ KUBERNETES_POD_DEFAULT_RESOURCES = os.environ.get(
     'KUBERNETES_POD_DEFAULT_RESOURCES',
     json.dumps({
         "requests": {
-            "ephemeral-storage": "1Gi",
+            "ephemeral-storage": "512Mi",
         },
         "limits": {
             "ephemeral-storage": "2Gi",
