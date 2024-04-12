@@ -469,7 +469,7 @@ class App(UuidAuditedModel):
                 name,
                 release.image,
                 self._get_entrypoint(scale_type),
-                [command],
+                command.split(),
                 **data
             )
 
