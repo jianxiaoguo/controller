@@ -32,6 +32,8 @@ class TestAppSettings(DryccTransactionTestCase):
         app_id = self.create_app()
         app = App.objects.get(id=app_id)
         self.assertTrue(app.appsettings_set.latest().routable)
+        self.assertTrue(app.appsettings_set.latest().autodeploy)
+        self.assertTrue(app.appsettings_set.latest().autorollback)
         # Set routable to false
         response = self.client.post(
             f'/v2/apps/{app.id}/settings',
@@ -39,6 +41,8 @@ class TestAppSettings(DryccTransactionTestCase):
         )
         self.assertEqual(response.status_code, 201, response.data)
         self.assertFalse(app.appsettings_set.latest().routable)
+        self.assertTrue(app.appsettings_set.latest().autodeploy)
+        self.assertTrue(app.appsettings_set.latest().autorollback)
 
     def test_settings_autodeploy(self, mock_requests):
         """
@@ -47,7 +51,9 @@ class TestAppSettings(DryccTransactionTestCase):
         # create app, expecting autodeploy to be true
         app_id = self.create_app()
         app = App.objects.get(id=app_id)
+        self.assertTrue(app.appsettings_set.latest().routable)
         self.assertTrue(app.appsettings_set.latest().autodeploy)
+        self.assertTrue(app.appsettings_set.latest().autorollback)
         # Set autodeploy to false
         response = self.client.post(
             f'/v2/apps/{app.id}/settings',
@@ -55,6 +61,8 @@ class TestAppSettings(DryccTransactionTestCase):
         )
         self.assertEqual(response.status_code, 201, response.data)
         self.assertFalse(app.appsettings_set.latest().autodeploy)
+        self.assertTrue(app.appsettings_set.latest().routable)
+        self.assertTrue(app.appsettings_set.latest().autorollback)
 
     def test_settings_autorollback(self, mock_requests):
         """
@@ -63,6 +71,8 @@ class TestAppSettings(DryccTransactionTestCase):
         # create app, expecting autorollback to be true
         app_id = self.create_app()
         app = App.objects.get(id=app_id)
+        self.assertTrue(app.appsettings_set.latest().routable)
+        self.assertTrue(app.appsettings_set.latest().autodeploy)
         self.assertTrue(app.appsettings_set.latest().autorollback)
         # Set autorollback to false
         response = self.client.post(
@@ -71,6 +81,8 @@ class TestAppSettings(DryccTransactionTestCase):
         )
         self.assertEqual(response.status_code, 201, response.data)
         self.assertFalse(app.appsettings_set.latest().autorollback)
+        self.assertTrue(app.appsettings_set.latest().routable)
+        self.assertTrue(app.appsettings_set.latest().autodeploy)
 
     def test_autoscale(self, mock_requests):
         """
