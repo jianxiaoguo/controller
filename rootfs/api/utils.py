@@ -18,6 +18,7 @@ import requests
 import jsonschema
 from copy import deepcopy
 from django.db import models
+from django.conf import settings
 from django.core.cache import cache
 from asgiref.sync import sync_to_async
 from requests_toolbelt import user_agent
@@ -159,7 +160,7 @@ def apply_tasks(tasks):
     if not tasks:
         return
 
-    executor = concurrent.futures.ThreadPoolExecutor(5)
+    executor = concurrent.futures.ThreadPoolExecutor(settings.DRYCC_APPLY_TASKS)
     for future in [executor.submit(task) for task in tasks]:
         error = future.exception()
         if error is not None:
