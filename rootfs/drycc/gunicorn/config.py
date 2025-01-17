@@ -31,7 +31,7 @@ logger_class = 'drycc.gunicorn.logging.Logging'
 loglevel = 'info'
 errorlog = '-'
 accesslog = '-'
-access_log_format = '%(h)s "%(r)s" %(s)s %(b)s "%(a)s"'
+access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s" %(L)s'
 
 
 def worker_int(worker):

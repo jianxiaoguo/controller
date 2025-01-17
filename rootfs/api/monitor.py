@@ -123,7 +123,7 @@ async def last_metrics(namespace):
       namespace,
       settings.DRYCC_METRICS_INTERVAL)
     url = urljoin(settings.DRYCC_PROMETHEUS_URL, "/api/v1/query")
-    params = {"query": promql, "start": int(time.time() - 60)}
+    params = {"query": promql, "start": int(time.time() - 120)}
     async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params) as response:
             if response.status != 200:
