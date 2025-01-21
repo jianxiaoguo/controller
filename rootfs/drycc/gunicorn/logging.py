@@ -3,6 +3,9 @@ from gunicorn.glogging import Logger
 
 
 class Logging(Logger):
+
+    access_fmt = r"%(asctime)s %(message)s"
+
     def access(self, resp, req, environ, request_time):
         # health check endpoints are only logged in debug mode
         if (
