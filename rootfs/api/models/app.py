@@ -539,7 +539,7 @@ class App(UuidAuditedModel):
                     'release': labels['version'],
                     'ready': "%s/%s" % (
                         p["status"].get("readyReplicas", 0),
-                        p["status"].get("replicas", 0),
+                        p['spec'].get("replicas", 0),
                     ),
                     'up_to_date': p["status"].get("updatedReplicas", 0),
                     'available_replicas': p["status"].get("availableReplicas", 0),
