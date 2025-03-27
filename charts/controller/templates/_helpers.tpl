@@ -343,3 +343,74 @@ kubelet_volume_stats_inodes: [namespace, persistentvolumeclaim, job]
 kubelet_volume_stats_inodes_free: [namespace, persistentvolumeclaim, job]
 kubelet_volume_stats_inodes_used: [namespace, persistentvolumeclaim, job]
 {{- end }}
+
+{{/* Generate controller config default volume template */}}
+{{ define "controller.config.defaultVolumeTemplate" }}
+nfs:
+  spec:
+    capacity:
+      storage: 65535Gi
+    accessModes:
+    - $access_mode
+    claimRef:
+      namespace: $namespace
+      name: $volume_claim_name
+    nfs:
+      server: $server
+      path: $path
+    mountOptions:
+    - nfsvers=4.2
+oss:
+  spec:
+    capacity:
+      storage: 65535Gi
+    accessModes:
+    - $access_mode
+    storageClassName: ''
+    claimRef:
+      namespace: $namespace
+      name: $volume_claim_name
+    mountOptions:
+    - allow-delete
+    - force-path-style
+    - prefix $prefix
+    - aws-access-key-id $access_key
+    - aws-secret-access-key $secret_key
+    - endpoint-url $server
+    csi:
+      driver: s3.csi.aws.com
+      volumeHandle: $volume_handle
+      volumeAttributes:
+        bucketName: $bucket
+{{- end }}
+
+{{/* Generate controller config default volume claim template */}}
+{{ define "controller.config.defaultVolumeClaimTemplate" }}
+csi:
+  spec:
+    accessModes:
+    - $access_mode
+    storageClassName: $storage_class
+    resources:
+      requests:
+        storage: $size
+    volumeMode: Filesystem
+nfs:
+  spec:
+    accessModes:
+    - $access_mode
+    storageClassName: ''
+    resources:
+      requests:
+        storage: $size
+    volumeName: $volume_name
+oss:
+  spec:
+    accessModes:
+    - $access_mode
+    storageClassName: ''
+    resources:
+      requests:
+        storage: $size
+    volumeName: $volume_name
+{{- end }}

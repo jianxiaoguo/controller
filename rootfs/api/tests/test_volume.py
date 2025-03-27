@@ -94,7 +94,7 @@ class VolumeTest(DryccTransactionTestCase):
         for key in response.data:
             self.assertIn(key,
                           ['uuid', 'owner', 'created', 'updated', 'app', 'name',
-                           'size', 'path', 'type', 'parameters'])
+                           'size', 'path', 'type', 'readonly', 'parameters'])
 
         expected = {
             'owner': self.user.username,
