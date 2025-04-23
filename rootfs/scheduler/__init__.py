@@ -359,7 +359,7 @@ class KubeHTTPClient(object):
             # TODO: Revisit in the future so it can run longer
             state = 'up'  # pod is still running
             waited = 0
-            timeout = 1200  # 20 minutes
+            timeout = 3600  # 60 minutes
             while (state == 'up' and waited < timeout):
                 pod = self.pod.get(namespace, name).json()
                 state = str(self.pod.state(pod))
