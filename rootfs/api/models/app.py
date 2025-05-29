@@ -459,15 +459,22 @@ class App(UuidAuditedModel):
                 else:
                     started = str(
                         datetime.now(timezone.utc).strftime(settings.DRYCC_DATETIME_FORMAT))
+                state = str(self.scheduler.pod.state(p))
+                if p['status']['phase'] != 'Pending':
+                    ready = len([1 for s in p["status"]["containerStatuses"] if s['ready']])
+                    restarts = sum([s['restartCount'] for s in p["status"]["containerStatuses"]])
+                else:
+                    restarts = 0
+                    ready = 0
                 item = {
-                    'name': p['metadata']['name'], 'state': str(self.scheduler().pod.state(p)),
+                    'name': p['metadata']['name'],
+                    'state': state,
                     'release': labels['version'], 'type': labels['type'], 'started': started,
                     'ready': "%s/%s" % (
-                        len([1 for s in p["status"]["containerStatuses"] if s['ready']]),
-                        len(p["status"]["containerStatuses"]),
+                        ready,
+                        len(p["spec"]["containers"]),
                     ),
-                    'restarts': sum(
-                        [s['restartCount'] for s in p["status"]["containerStatuses"]]),
+                    'restarts': restarts
                 }
                 data.append(item)
             # sorting so latest start date is first
