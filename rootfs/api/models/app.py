@@ -459,7 +459,7 @@ class App(UuidAuditedModel):
                 else:
                     started = str(
                         datetime.now(timezone.utc).strftime(settings.DRYCC_DATETIME_FORMAT))
-                state = str(self.scheduler.pod.state(p))
+                state = str(self.scheduler().pod.state(p))
                 if p['status']['phase'] != 'Pending':
                     ready = len([1 for s in p["status"]["containerStatuses"] if s['ready']])
                     restarts = sum([s['restartCount'] for s in p["status"]["containerStatuses"]])
