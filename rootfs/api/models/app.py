@@ -1147,6 +1147,14 @@ class App(UuidAuditedModel):
                 k8s_volumes.append(k8s_volume)
                 k8s_volume_mounts.append(
                     {"name": volume.name, "mountPath": volume.path.get(ptype)})
+        if (settings.ALLOW_EXTRA_VOLUMES_APPS and self.id in settings.ALLOW_EXTRA_VOLUMES_APPS) and \
+                (settings.ALLOW_EXTRA_VOLUMES_PTYPES and ptype in settings.ALLOW_EXTRA_VOLUMES_PTYPES):
+            extra_volumes = json.loads(settings.EXTRA_VOLUMES)
+            extra_volume_mounts = json.loads(settings.EXTRA_VOLUME_MOUNTS)
+            if extra_volumes:
+                k8s_volumes.extend(extra_volumes)
+            if extra_volume_mounts:
+                k8s_volume_mounts.extend(extra_volume_mounts)
         return k8s_volumes, k8s_volume_mounts
 
     def _gather_app_settings(self, release, app_settings, ptype, replicas, volumes=None):
