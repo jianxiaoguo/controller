@@ -502,5 +502,4 @@ except KeyError:
     ALLOW_EXTRA_VOLUMES_PTYPES = []
 
 
-EXTRA_VOLUMES = os.environ.get('EXTRA_VOLUMES', '')
-EXTRA_VOLUME_MOUNTS = os.environ.get('EXTRA_VOLUME_MOUNTS', '')
+EXTRA_VOLUMES = json.loads(os.environ.get('EXTRA_VOLUMES', '{}'))
