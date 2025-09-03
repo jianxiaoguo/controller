@@ -76,3 +76,19 @@ kubectl get pod --namespace=drycc -w | grep drycc-controller
 [prs]: https://github.com/drycc/controller/pulls
 [workflow]: https://github.com/drycc/workflow
 [Podman]: https://podman.io/
+
+
+```
+添加EXTRA_VOLUMES env，转换格式写入env
+json.loads(a)
+json.dumps(a)
+{
+  "id":
+    "ptype1,ptype2": {
+      {
+        "volumes": [], 
+        "volume_mounts": []
+    }
+  }
+}
+```
