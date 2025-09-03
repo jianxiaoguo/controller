@@ -1,7 +1,6 @@
 import time
 import aiohttp
 from typing import Iterator, AsyncGenerator
-from urllib.parse import urljoin
 from django.conf import settings
 
 
@@ -58,7 +57,7 @@ async def query_prom(url, params) -> list[tuple[dict[str, str], int]]:
 async def last_metrics(namespace) -> AsyncGenerator[Iterator, str]:
     if not settings.DRYCC_METRICS_CONFIG:
         return
-    url = urljoin(settings.DRYCC_PROMETHEUS_URL, "/api/v1/query")
+    url = f"{settings.DRYCC_PROMETHEUS_URL}/api/v1/query"
     promql = query_last_metrics_promql_tpl % (
       '|'.join(settings.DRYCC_METRICS_CONFIG.keys()),
       namespace,
@@ -76,21 +75,21 @@ async def last_metrics(namespace) -> AsyncGenerator[Iterator, str]:
 
 async def query_loadbalancer(namespaces: Iterator[str], start: int, stop: int
                              ) -> list[tuple[dict[str, str], int]]:
-    url = urljoin(settings.DRYCC_PROMETHEUS_URL, "/api/v1/query")
+    url = f"{settings.DRYCC_PROMETHEUS_URL}/api/v1/query"
     promql = query_loadbalancer_promql_tpl % "|".join(namespaces)
     return await query_prom(url, {"query": promql, "start": start, "end": stop})
 
 
 async def query_network_receive_flow(namespaces: Iterator[str], start: int, stop: int
                                      ) -> list[tuple[dict[str, str], int]]:
-    url = urljoin(settings.DRYCC_PROMETHEUS_URL, "/api/v1/query")
+    url = f"{settings.DRYCC_PROMETHEUS_URL}/api/v1/query"
     promql = query_network_receive_flow_promql_tpl % ("|".join(namespaces), f"{stop-start}s")
     return await query_prom(url, {"query": promql, "start": start, "end": stop})
 
 
 async def query_network_transmit_flow(namespaces: Iterator[str], start: int, stop: int
                                       ) -> list[tuple[dict[str, str], int]]:
-    url = urljoin(settings.DRYCC_PROMETHEUS_URL, "/api/v1/query")
+    url = f"{settings.DRYCC_PROMETHEUS_URL}/api/v1/query"
     promql = query_network_transmit_flow_promql_tpl % ("|".join(namespaces), f"{stop-start}s")
     return await query_prom(url, {"query": promql, "start": start, "end": stop})
 
@@ -98,7 +97,7 @@ async def query_network_transmit_flow(namespaces: Iterator[str], start: int, sto
 async def query_cpu_usage(namespace: str, ptype: str, every: str,
                           start: int, stop: int, step: int,
                           ) -> list[tuple[dict[str, str], int]]:
-    url = urljoin(settings.DRYCC_PROMETHEUS_URL, "/api/v1/query_range")
+    url = f"{settings.DRYCC_PROMETHEUS_URL}/api/v1/query_range"
     pod_prefix = "%s-%s" % (namespace, ptype)
     promql = query_cpu_usage_promql_tpl % (pod_prefix, namespace, every)
     return await query_prom(url, {"query": promql, "start": start, "end": stop, "step": step})
@@ -107,7 +106,7 @@ async def query_cpu_usage(namespace: str, ptype: str, every: str,
 async def query_memory_usage(namespace: str, ptype: str, every: str,
                              start: int, stop: int, step: int,
                              ) -> list[tuple[dict[str, str], int]]:
-    url = urljoin(settings.DRYCC_PROMETHEUS_URL, "/api/v1/query_range")
+    url = f"{settings.DRYCC_PROMETHEUS_URL}/api/v1/query_range"
     pod_prefix = "%s-%s" % (namespace, ptype)
     promql = query_memory_usage_promql_tpl % (pod_prefix, namespace, every)
     return await query_prom(url, {"query": promql, "start": start, "end": stop, "step": step})
@@ -116,7 +115,7 @@ async def query_memory_usage(namespace: str, ptype: str, every: str,
 async def query_network_receive_usage(namespace: str, ptype: str, every: str,
                                       start: int, stop: int, step: int,
                                       ) -> list[tuple[dict[str, str], int]]:
-    url = urljoin(settings.DRYCC_PROMETHEUS_URL, "/api/v1/query_range")
+    url = f"{settings.DRYCC_PROMETHEUS_URL}/api/v1/query_range"
     pod_prefix = "%s-%s" % (namespace, ptype)
     promql = query_network_receive_usage_promql_tpl % (pod_prefix, namespace, every)
     return await query_prom(url, {"query": promql, "start": start, "end": stop, "step": step})
@@ -125,7 +124,7 @@ async def query_network_receive_usage(namespace: str, ptype: str, every: str,
 async def query_network_transmit_usage(namespace: str, ptype: str, every: str,
                                        start: int, stop: int, step: int,
                                        ) -> list[tuple[dict[str, str], int]]:
-    url = urljoin(settings.DRYCC_PROMETHEUS_URL, "/api/v1/query_range")
+    url = f"{settings.DRYCC_PROMETHEUS_URL}/api/v1/query_range"
     pod_prefix = "%s-%s" % (namespace, ptype)
     promql = query_network_transmit_usage_promql_tpl % (pod_prefix, namespace, every)
     return await query_prom(url, {"query": promql, "start": start, "end": stop, "step": step})
