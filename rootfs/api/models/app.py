@@ -1175,10 +1175,25 @@ class App(UuidAuditedModel):
         k8s_volumes, k8s_volume_mounts = [], []
         if volumes:
             for volume in volumes:
-                k8s_volumes.append(
-                    {"name": volume.name, "persistentVolumeClaim": {"claimName": volume.name}})
+                k8s_volume = {"name": volume.name}
+                if volume.type == "csi":
+                    k8s_volume.update({"persistentVolumeClaim": {"claimName": volume.name}})
+                else:
+                    k8s_volume.update(volume.parameters)
+                k8s_volumes.append(k8s_volume)
                 k8s_volume_mounts.append(
                     {"name": volume.name, "mountPath": volume.path.get(ptype)})
+        if settings.EXTRA_VOLUMES:
+            apps = list(settings.EXTRA_VOLUMES.keys())
+            if self.id in apps:
+                ptypes = list(settings.EXTRA_VOLUMES.get(self.id).keys())[0].split(",")
+                if ptype in ptypes:
+                    extra_volumes = list(settings.EXTRA_VOLUMES.get(self.id).values())[0].get("volumes")
+                    extra_volume_mounts = list(settings.EXTRA_VOLUMES.get(self.id).values())[0].get("volume_mounts")
+                    if extra_volumes:
+                        k8s_volumes.extend(extra_volumes)
+                    if extra_volume_mounts:
+                        k8s_volume_mounts.extend(extra_volume_mounts)
         return k8s_volumes, k8s_volume_mounts
 
     def _gather_app_settings(self, release, app_settings, ptype, replicas, volumes=None):

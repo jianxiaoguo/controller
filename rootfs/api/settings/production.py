@@ -480,3 +480,16 @@ CACHES = {
 WORKFLOW_MANAGER_URL = os.environ.get('WORKFLOW_MANAGER_URL', None)
 WORKFLOW_MANAGER_ACCESS_KEY = os.environ.get('WORKFLOW_MANAGER_ACCESS_KEY', None)
 WORKFLOW_MANAGER_SECRET_KEY = os.environ.get('WORKFLOW_MANAGER_SECRET_KEY', None)
+
+
+try:
+    ALLOW_EXTRA_VOLUMES_APPS = os.environ['ALLOW_EXTRA_VOLUMES_APPS'].split(',')
+except KeyError:
+    ALLOW_EXTRA_VOLUMES_APPS = []
+try:
+    ALLOW_EXTRA_VOLUMES_PTYPES = os.environ['ALLOW_EXTRA_VOLUMES_PTYPES'].split(',')
+except KeyError:
+    ALLOW_EXTRA_VOLUMES_PTYPES = []
+
+
+EXTRA_VOLUMES = json.loads(os.environ.get('EXTRA_VOLUMES', '{}'))
