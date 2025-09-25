@@ -970,9 +970,9 @@ class ConfigTest(DryccTransactionTestCase):
         self.assertEqual(
             release.config.envs("web"),
             {
-                'GROUP': 'g1', 'DEBUG': 'tr', 'TEST1': 'g1', 'TEST2': 'tr', 'PENV1': 'web',
-                'PENV2': 'web', "WEBSITE": "www.drycc.cc",
-            }
+                'GROUP': 'g1', 'DEBUG': 'tr', 'TEST1': 'g1', 'TEST2': 'tr',
+                'PENV1': 'web', 'PENV2': 'web'
+            },
         )
 
         # test use old config and healthcheck
@@ -1001,5 +1001,5 @@ class ConfigTest(DryccTransactionTestCase):
             self.assertEqual(response.status_code, 201, response.data)
         release = app.release_set.latest()
         self.assertEqual(release.failed, False)
-        self.assertEqual(release.config.envs("web"), {"WEBSITE": "www.drycc.cc"})
+        self.assertEqual(release.config.envs("web"), {})
         self.assertEqual(release.config.values_refs, {})
