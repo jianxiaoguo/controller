@@ -1,3 +1,4 @@
+import time
 from collections import OrderedDict
 from datetime import datetime, timezone
 import logging
@@ -174,6 +175,8 @@ class KubeHTTPClient(object):
         """
         Make a GET request to the k8s server.
         """
+        response = None
+        start_time = time.time()
         try:
             url = urljoin(self.url, path)
             response = self.session.get(url, params=params, **kwargs)
@@ -182,6 +185,13 @@ class KubeHTTPClient(object):
             message = "There was a problem retrieving data from " \
                       "the Kubernetes API server. URL: {}, params: {}".format(url, params)
             logger.error(message)
+            logger.error(f"{datetime.now()} get error message: {message}")
+            logger.error(f"{datetime.now()} get error err: {err}")
+            elapsed = time.time() - start_time
+            logger.error(f"{datetime.now()} K8s API elapsed: {elapsed:.2f}s")
+            if response is not None:
+                logger.error(f"{datetime.now()} K8s API Response: {response.status_code}")
+                logger.error(f"{datetime.now()} K8s API Response: {response.body}")
             raise KubeException(message) from err
 
         return response
