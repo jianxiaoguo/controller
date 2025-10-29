@@ -17,7 +17,7 @@ class K8sAPIMonitor:
         self.interval_seconds = interval_seconds
         self.token_path = "/var/run/secrets/kubernetes.io/serviceaccount/token"
         self.ca_cert_path = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-        self.log_file = f"api_monitor_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+        self.log_file = f"apiserver_monitor_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
         
         # API URLs 列表
         self.api_urls = [
