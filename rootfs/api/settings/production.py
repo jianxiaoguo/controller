@@ -257,14 +257,15 @@ WORKFLOW_NAMESPACE = os.environ.get('WORKFLOW_NAMESPACE', 'drycc')
 KUBERNETES_CLUSTER_DOMAIN = os.environ.get("KUBERNETES_CLUSTER_DOMAIN", "cluster.local")
 # default scheduler settings
 SCHEDULER_MODULE = 'scheduler'
-SCHEDULER_URL = "https://{}:{}".format(
-    # accessing the k8s api server by IP address rather than hostname avoids
-    # intermittent DNS errors
-    os.environ.get(
-        'KUBERNETES_SERVICE_HOST',
-        'kubernetes.default.svc.{}'.format(KUBERNETES_CLUSTER_DOMAIN)
-    ),
-    os.environ.get('KUBERNETES_SERVICE_PORT', '443')
+SCHEDULER_URL = os.environ.get(
+    'CUSTOM_SCHEDULER_URL',
+    "https://{}:{}".format(
+        os.environ.get(
+            'KUBERNETES_SERVICE_HOST',
+            'kubernetes.default.svc.{}'.format(KUBERNETES_CLUSTER_DOMAIN)
+        ),
+        os.environ.get('KUBERNETES_SERVICE_PORT', '443')
+    )
 )
 
 K8S_API_VERIFY_TLS = os.environ.get('K8S_API_VERIFY_TLS', 'true').lower() == "true"
