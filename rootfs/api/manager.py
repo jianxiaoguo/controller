@@ -74,6 +74,8 @@ class User(ManagerAPI):
                 status = {"is_active": True, "message": msg}
                 logger.error(msg)
                 logger.exception(ex)
+            if status.status_code != 200:
+                status = {"is_active": False, "message": f"failed to get user {id} status."}
             cache.set(key, status, timeout=settings.DRYCC_CACHE_USER_TIME)
         return status
 
