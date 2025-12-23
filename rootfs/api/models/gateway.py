@@ -238,7 +238,12 @@ class Route(AuditedModel):
         for rule in self.rules:
             for backend_ref in rule["backendRefs"]:
                 port = backend_ref["port"]
-                if port not in ports or backend_ref["name"] != str(service):
+                logger.info(f'check_rules port: {port}, ports:{ports}')
+                backend_name = backend_ref["name"]
+                svc= str(service)
+                logger.info(f'check_rules backend_name: {backend_name}, svc:{svc}')
+                # if port not in ports or backend_ref["name"] != str(service):
+                if port not in ports:
                     return False, {"detail": "backendRefs associated with incorrect service"}
         return True, ""
 
