@@ -343,7 +343,11 @@ class Release(UuidAuditedModel):
         if not secrets:
             secrets = []
         for secret in secrets:
-            self.scheduler().secret.delete(namespace, secret['metadata']['name'])
+            try:
+                self.scheduler().secret.delete(namespace, secret['metadata']['name'])
+            except KubeHTTPException as e:
+                if e.response.status_code != 404:
+                    raise
 
     def _delete_release_in_scheduler(self, namespace, ptypes, version_name):
         """
