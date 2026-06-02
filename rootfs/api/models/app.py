@@ -485,7 +485,7 @@ class App(UuidAuditedModel):
                 item = {
                     'name': p['metadata']['name'],
                     'state': state,
-                    'release': labels['version'], 'type': labels['type'], 'started': started,
+                    'release': labels.get('version', ''), 'type': labels['type'], 'started': started,
                     'ready': "%s/%s" % (
                         ready,
                         len(p["spec"]["containers"]),
