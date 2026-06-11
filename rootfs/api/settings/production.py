@@ -410,6 +410,8 @@ APP_URL_REGEX = '[a-z0-9-]+'
 
 DOMAIN_URL_REGEX = r'\**\.?[-\._\w]+'
 
+NAME_REGEX = r'[a-z0-9]+(\-[a-z0-9]+)*'
+
 # Oauth settings
 
 DRYCC_PASSPORT_URL = os.environ.get('DRYCC_PASSPORT_URL', 'https://127.0.0.1:8000')

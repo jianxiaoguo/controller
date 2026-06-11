@@ -8,5 +8,7 @@
 export CODENAME=bookworm
 export DEV_REGISTRY=registry.drycc.cc
 make podman-build
-podman tag registry.drycc.cc/drycc/controller:canary harbor.uucin.com/lijianguo/controller:1.12.0-patch-10
-podman push harbor.uucin.com/lijianguo/controller:1.12.0-patch-10
+podman tag registry.drycc.cc/drycc/controller:canary harbor.uucin.com/lijianguo/controller:1.12.0-patch-11
+podman push harbor.uucin.com/lijianguo/controller:1.12.0-patch-11
+podman tag registry.drycc.cc/drycc/controller:canary harbor.uucin.com/drycc/controller:1.12.0-patch-11
+podman push harbor.uucin.com/drycc/controller:1.12.0-patch-11
