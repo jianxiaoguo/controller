@@ -163,6 +163,8 @@ class Release(UuidAuditedModel):
                 'PORT', self.config.values.get('PORT', DEFAULT_CONTAINER_PORT)))
 
     def deploy(self, ptypes=None, force_deploy=False):
+        # empty/None ptypes means deploy all process types (v1.11.0 semantics)
+        ptypes = ptypes or None
         lock = DeployLock(self.app.pk)
         if not lock.acquire(ptypes, force=force_deploy):
             raise DryccException('there is an executing pipeline, please wait or force deploy')

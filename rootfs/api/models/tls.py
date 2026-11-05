@@ -5,7 +5,7 @@ from django.db import transaction
 from django.contrib.auth import get_user_model
 from api.exceptions import AlreadyExists
 from api.exceptions import ServiceUnavailable
-from scheduler import KubeException
+from scheduler import KubeHTTPException, KubeException
 from .base import UuidAuditedModel
 
 
@@ -104,7 +104,14 @@ class TLS(UuidAuditedModel):
                 if response.status_code == 200:
                     data = response.json()
                     version = data["metadata"]["resourceVersion"]
-                    self.scheduler().certificate.put(namespace, name, hosts, version)
+                    try:
+                        self.scheduler().certificate.put(namespace, name, hosts, version)
+                    except KubeHTTPException as e:
+                        if e.response.status_code != 409:
+                            raise e
+                        self.log(
+                            "failed to update certificate {}: {}".format(name, e),
+                            level=logging.ERROR)
                 else:
                     self.log(
                         "certificate {} does not exist".format(namespace), level=logging.INFO)

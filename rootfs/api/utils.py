@@ -233,7 +233,7 @@ class DeployLock(CacheLock):
     def locked(self, ptypes):
         value = cache.get(self.ptypes_key, [])
         locked_ptypes = []
-        for ptype in ptypes:
+        for ptype in (ptypes or []):
             if ptype in value:
                 locked_ptypes.append(ptype)
         return locked_ptypes
@@ -244,7 +244,7 @@ class DeployLock(CacheLock):
                 value = cache.get(self.ptypes_key, [])
                 if not force and len(self.locked(ptypes)) > 0:
                     return False
-                value.extend(ptypes)
+                value.extend(ptypes or [])
                 value = list(set(value))
                 cache.set(self.ptypes_key, value, timeout=3600)
                 return True
@@ -258,7 +258,7 @@ class DeployLock(CacheLock):
                 value = cache.get(self.ptypes_key, [])
                 if value is None:
                     return
-                for ptype in ptypes:
+                for ptype in (ptypes or []):
                     if ptype in value:
                         value.remove(ptype)
                 cache.set(self.ptypes_key, value)
